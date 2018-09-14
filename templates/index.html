@@ -1,0 +1,58 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Wordassoziationsspiel{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="{{url_for('.static', filename='extension.css')}}">
+<link rel="stylesheet" href="{{url_for('.static', filename='fakeLoader.css')}}">
+{% endblock %}
+
+{% block scripts %}
+{{super()}}
+<script type="text/javascript" src="{{url_for('.static', filename='extension.js')}}"></script>
+<script type="text/javascript" src="{{url_for('.static', filename='fakeLoader.js')}}"></script>
+{% endblock %}
+
+
+{% block content %}
+<div id="fakeloader"></div>
+<div class="jumbotron">
+    <div class="container">
+        <h1 class="display-4">Wortassoziationsspiel</h1>
+        <p class="lead">Schreib ein Wort in das Inputfeld und sieh, welche Assoziationen das System findet.</p>
+        <hr class="my-4">
+        <p>Some more text .. </p>
+    </div>
+</div>
+
+<div class="container">
+    {% if error %}
+        <div class="alert alert-warning" role="alert">
+            {{error}}
+        </div>
+    {% endif %}
+
+    {% if prediction %}
+        <div class="container">
+            {{prediction|safe}}
+        </div>
+    {% endif %}
+
+        <form method="post" action="/predict">
+            <label for="input1">Basiswort: </label>
+            <input name="input" type="text" class="form-control" id="input1" placeholder="Haus">
+        <button type="submit" class="btn btn-outline-primary btn-lg btn-block">Abschicken</button>
+    </form>
+</div>
+
+
+<footer class="sticky">
+   <div class="container">
+        <img src="./static/00_UM_Dachmarke_EN_RGB-scale.png" style="height:60px"
+             alt="Data and Web Science Research Group, University of Mannheim">
+        <a href="https://dws.informatik.uni-mannheim.de/en/">
+            <span class="text-muted">© Data & Web Science Research Group</span>
+        </a>
+    </div>
+</footer>
+{% endblock %}
