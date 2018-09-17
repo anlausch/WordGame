@@ -25,17 +25,20 @@ def predict():
         text = request.form["input"]
         if text is None or text == "" or text == " ":
             logger.error("No data provided")
-            return render_template("index.html", error="Please insert a text before submitting.")
+            return render_template("index.html", error="Bitte gib einen Begriff ein, bevor du auf Abschicken drückst.")
 
         logger.info("Data: " + json.dumps(text))
         prediction = server.predictor.predict(text=text)
-        return render_template("index.html", prediction=prediction)
+        if len(prediction) == 0:
+            return render_template("index.html", error="Leider konnten wir den Begriff " + str(text) + " nicht finden.")
+        return render_template("index.html", prediction=prediction, baseterm=text)
     except Exception as e:
         return str(e)
 
 
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
+@app.route('/predict', methods=['GET'])
 def index():
     return render_template("index.html")
 

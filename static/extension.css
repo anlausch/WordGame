@@ -7,6 +7,10 @@ body {
   margin-bottom: 60px; /* Margin bottom by footer height */
 }
 
+#header{
+    background-color: #C5FF80;
+}
+
 .sticky {
   position: absolute;
   bottom: 0;

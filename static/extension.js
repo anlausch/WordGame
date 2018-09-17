@@ -12,6 +12,6 @@ $('.btn').on('click', function() {
 
         spinner: "spinner1",
 
-        bgColor: "#a5d6a7"
+        bgColor: "#69E8A3"
     });
 });

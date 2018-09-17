@@ -14,7 +14,11 @@ class Predictor:
 
     def predict(self, text=""):
         print("Predicting")
-        return self.embeddings.most_similar(text)
+        try:
+            prediction = self.embeddings.most_similar(text)
+            return [word for (word, sim) in prediction if text not in word and text.lower() not in word]
+        except Exception as e:
+            return []
 
 def main():
     predictor = Predictor()

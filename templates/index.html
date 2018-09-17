@@ -16,12 +16,12 @@
 
 {% block content %}
 <div id="fakeloader"></div>
-<div class="jumbotron">
+<div class="jumbotron" id="header">
     <div class="container">
         <h1 class="display-4">Wortassoziationsspiel</h1>
         <p class="lead">Schreib ein Wort in das Inputfeld und sieh, welche Assoziationen das System findet.</p>
         <hr class="my-4">
-        <p>Some more text .. </p>
+        {#<p>Some more text .. </p>#}
     </div>
 </div>
 
@@ -32,17 +32,23 @@
         </div>
     {% endif %}
 
-    {% if prediction %}
-        <div class="container">
-            {{prediction|safe}}
-        </div>
-    {% endif %}
 
-        <form method="post" action="/predict">
-            <label for="input1">Basiswort: </label>
-            <input name="input" type="text" class="form-control" id="input1" placeholder="Haus">
-        <button type="submit" class="btn btn-outline-primary btn-lg btn-block">Abschicken</button>
+    <form method="post" action="/predict">
+        <h3 class="display-5">Basiswort: </h3>
+        <input name="input" type="text" class="form-control" id="input1" placeholder="Bitte hier das Basiswort eingeben...">
+        <button type="submit" class="btn btn-success btn-lg btn-block">Abschicken</button>
     </form>
+    {% if prediction %}
+    <p></p>
+    <div class="container border border-success">
+        <h3 class="display-5">Gefundene Assoziationen zu {{baseterm}} </h3>
+        <ul>
+        {% for pred in prediction %}
+            <li>{{ pred }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
 </div>
 
 
