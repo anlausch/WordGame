@@ -27,7 +27,8 @@
 
 <div class="container">
     {% if error %}
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Achtung</h4>
             {{error}}
         </div>
     {% endif %}
@@ -41,12 +42,47 @@
     {% if prediction %}
     <p></p>
     <div class="container border border-success">
-        <h3 class="display-5">Gefundene Assoziationen zu {{baseterm}} </h3>
-        <ul>
-        {% for pred in prediction %}
-            <li>{{ pred }}</li>
-        {% endfor %}
-        </ul>
+        <h3 class="display-5">Unser System hat {{no_hits}} Assoziationen zu {{baseterm}} gefunden. Versuch, diese zu erraten.</h3>
+        {% if wrong_guess %}
+            <div class="alert alert-warning" role="alert">
+                <h4 class="alert-heading">Schade</h4>
+                {{wrong_guess}}
+            </div>
+        {% endif %}
+        {% if right_guess %}
+            <div class="alert alert-success" role="alert">
+                <h4 class="alert-heading">Super</h4>
+                {{right_guess}}
+            </div>
+        {% endif %}
+        <form method="post" action="/guess">
+            <input name="guess" type="text" class="form-control" id="input2" placeholder="Welche Assoziationen hast du?">
+            <input class="form-control" type="text" name="prediction" value="{{prediction|safe}}" id="hiddenPred" hidden="true"/>
+            <input class="form-control" type="text" name="baseterm" value="{{baseterm|safe}}" id="hiddenTerm" hidden="true"/>
+            <input class="form-control" type="text" name="correct_guesses" value="{{correct_guesses|safe}}" id="hiddenCorrect" hidden="true"/>
+            <button type="submit" class="btn btn-success btn-lg btn-block">Assoziation testen</button>
+        </form>
+
+        {% if correct_guesses %}
+            <h3 class="display-5">Diese Assoziationen hast du schon gefunden: </h3>
+            <ul>
+                {% for cor in correct_guesses %}
+                    <li>{{ cor }}</li>
+            {% endfor %}
+            </ul>
+        {% endif %}
+        <form method="post" action="/solution">
+            <input class="form-control" type="text" name="prediction" value="{{prediction|safe}}" id="hiddenPred2" hidden="true"/>
+            <input class="form-control" type="text" name="baseterm" value="{{baseterm|safe}}" id="hiddenTerm2" hidden="true"/>
+            <input class="form-control" type="text" name="correct_guesses" value="{{correct_guesses|safe}}" id="hiddenCorrect2" hidden="true"/>
+            <button type="submit" class="btn btn-success btn-lg btn-block">Lösung anzeigen</button>
+        </form>
+        {% if show %}
+            <h3 class="display-5">Die Assoziationen unseres Systems sind: </h3>
+            {% for pred in prediction %}
+                <li>{{ pred }}</li>
+            {% endfor %}
+        {% endif%}
     </div>
     {% endif %}
 </div>

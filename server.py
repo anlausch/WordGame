@@ -14,6 +14,12 @@ class Server:
     def __init__(self, **kwds):
         self.__dict__.update(kwds)
 
+    def guess_check(self, prediction=[], guess=""):
+        if guess in prediction:
+            return guess
+        else:
+            return None
+
 server = Server()
 app = Flask(__name__)
 Bootstrap(app)
@@ -31,7 +37,46 @@ def predict():
         prediction = server.predictor.predict(text=text)
         if len(prediction) == 0:
             return render_template("index.html", error="Leider konnten wir den Begriff " + str(text) + " nicht finden.")
-        return render_template("index.html", prediction=prediction, baseterm=text)
+        return render_template("index.html", prediction=prediction, baseterm=text, no_hits=len(prediction))
+    except Exception as e:
+        return str(e)
+
+@app.route('/guess', methods=['POST'])
+def guess():
+    try:
+        guess = request.form["guess"]
+        prediction = eval(request.form["prediction"])
+        baseterm = request.form["baseterm"]
+        correct_guesses = request.form["correct_guesses"]
+        if correct_guesses != "":
+            correct_guesses = eval(correct_guesses)
+        else:
+            correct_guesses = []
+        if guess is None or guess == "" or guess == " ":
+            logger.error("No data provided")
+            return render_template("index.html", prediction=prediction, no_hits=len(prediction), correct_guesses=correct_guesses, baseterm=baseterm, error="Bitte gib einen Begriff ein, wenn du rätst.")
+
+        logger.info("Guess: " + json.dumps(guess))
+        correct_guess = server.guess_check(guess=guess, prediction=prediction)
+        if correct_guess is None:
+            return render_template("index.html", prediction=prediction, no_hits=len(prediction),
+                                   correct_guesses=correct_guesses, baseterm=baseterm, guess=guess, wrong_guess="Leider falsch. Die Assoziation " + str(guess) + " hat unser System nicht gefunden.")
+        correct_guesses.append(correct_guess)
+        return render_template("index.html", prediction=prediction, no_hits=len(prediction), correct_guesses=correct_guesses, baseterm=baseterm, right_guess="Ein Volltreffer! Die Assoziation " + str(guess) + " wurde auch von unserem System gefunden.")
+    except Exception as e:
+        return str(e)
+
+@app.route('/solution', methods=['POST'])
+def show_solution():
+    try:
+        prediction = eval(request.form["prediction"])
+        baseterm = request.form["baseterm"]
+        correct_guesses = request.form["correct_guesses"]
+        if correct_guesses != "":
+            correct_guesses = eval(correct_guesses)
+        else:
+            correct_guesses = []
+        return render_template("index.html", prediction=prediction, no_hits=len(prediction), correct_guesses=correct_guesses, baseterm=baseterm, show=True)
     except Exception as e:
         return str(e)
 
@@ -39,6 +84,8 @@ def predict():
 @app.route('/', methods=['GET'])
 @app.route('/index', methods=['GET'])
 @app.route('/predict', methods=['GET'])
+@app.route('/guess', methods=['GET'])
+@app.route('/solution', methods=['GET'])
 def index():
     return render_template("index.html")
 
