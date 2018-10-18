@@ -8,15 +8,50 @@ import logging
 from flask_bootstrap import Bootstrap
 import predictor
 import json
-
+import unicodedata
+import doctest
 
 class Server:
     def __init__(self, **kwds):
         self.__dict__.update(kwds)
 
+
+    def normalize_string(self, s):
+        """
+        >>> s = Server(); s.normalize_string("Mädchen")
+        'Maedchen'
+        >>> s = Server(); s.normalize_string("Mädchen Hut")
+        'Maedchen_Hut'
+        >>> s = Server(); s.normalize_string("Mädchen Hütte Hälfte")
+        'Maedchen_Huette_Haelfte'
+        """
+        umlaut_dict = {u'ä': u'ae',
+                       u'ö': u'oe',
+                       u'ü': u'ue',
+                       u'ß': u'ss',
+                       u'Ä': u'Ae',
+                       u'Ö': u'Oe',
+                       u'Ü': u'Ue',
+                       }
+        for (key, value) in umlaut_dict.items():
+            s = s.replace(key, value)
+        multi_word = s.split(" ")
+        if len(multi_word) > 1:
+            s = '_'.join(multi_word)
+        return s
+
     def guess_check(self, prediction=[], guess=""):
-        if guess in prediction:
-            return guess
+        """
+        >>> s = Server(); s.guess_check(["Maedchen"],"Mädchen")
+        'Mädchen'
+        >>> s = Server(); s.guess_check(["maerchen_schloss"],"Märchen Schloss")
+        'Märchen Schloss'
+        """
+        original = guess
+        #guess = unicodedata.normalize('NFD', guess)#.encode('ascii', 'ignore')
+        guess = self.normalize_string(guess)
+        if guess in prediction or guess.capitalize() in prediction or guess.lower() in prediction:
+            return original
         else:
             return None
 
@@ -34,9 +69,14 @@ def predict():
             return render_template("index.html", error="Bitte gib einen Begriff ein, bevor du auf Abschicken drückst.")
 
         logger.info("Data: " + json.dumps(text))
+        text = server.normalize_string(text)
         prediction = server.predictor.predict(text=text)
         if len(prediction) == 0:
-            return render_template("index.html", error="Leider konnten wir den Begriff " + str(text) + " nicht finden.")
+            prediction = server.predictor.predict(text=text.lower())
+            if len(prediction) == 0:
+                prediction = server.predictor.predict(text=text.capitalize())
+                if len(prediction) == 0:
+                    return render_template("index.html", error="Leider konnten wir den Begriff " + str(text) + " nicht finden.")
         return render_template("index.html", prediction=prediction, baseterm=text, no_hits=len(prediction))
     except Exception as e:
         return str(e)
