@@ -100,9 +100,10 @@ def guess():
         correct_guess = server.guess_check(guess=guess, prediction=prediction)
         if correct_guess is None:
             return render_template("index.html", prediction=prediction, no_hits=len(prediction),
-                                   correct_guesses=correct_guesses, baseterm=baseterm, guess=guess, wrong_guess="Leider falsch. Die Assoziation " + str(guess) + " hat unser System nicht gefunden.")
+                                   correct_guesses=correct_guesses, baseterm=baseterm, guess=guess, wrong_guess="Leider falsch. Die Assoziation \"" + str(guess) + "\" hat unser System nicht gefunden.")
         correct_guesses.append(correct_guess)
-        return render_template("index.html", prediction=prediction, no_hits=len(prediction), correct_guesses=correct_guesses, baseterm=baseterm, right_guess="Ein Volltreffer! Die Assoziation " + str(guess) + " wurde auch von unserem System gefunden.")
+        return render_template("index.html", prediction=prediction, no_hits=len(prediction), correct_guesses=correct_guesses,
+                               baseterm=baseterm, right_guess="Ein Volltreffer! Die Assoziation \"" + str(guess) + "\" wurde auch von unserem System gefunden.")
     except Exception as e:
         return str(e)
 

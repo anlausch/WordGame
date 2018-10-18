@@ -16,10 +16,15 @@
 
 {% block content %}
 <div id="fakeloader"></div>
-<div class="jumbotron" id="header">
+<div class="jumbotron" id="header" style="padding: 3rem 2rem">
     <div class="container">
-        <h1 class="display-4">Wortassoziationsspiel</h1>
-        <p class="lead">Schreib ein Wort in das Inputfeld und sieh, welche Assoziationen das System findet.</p>
+        <div class="row">
+            <img src="./static/association.png" class="col-lg-2" style="height:150px">
+            <div class="col-lg-10">
+                <h1 class="display-4" style="align-self:center">Wortassoziationsspiel</h1>
+                <p class="lead">Schreib ein Wort in das Inputfeld und sieh, welche Assoziationen das System findet.</p>
+            </div>
+        </div>
         <hr class="my-4">
         {#<p>Some more text .. </p>#}
     </div>
@@ -35,14 +40,16 @@
 
 
     <form method="post" action="/predict">
-        <h3 class="display-5">Basiswort: </h3>
-        <input name="input" type="text" class="form-control" id="input1" placeholder="Bitte hier das Basiswort eingeben...">
-        <button type="submit" class="btn btn-success btn-lg btn-block">Abschicken</button>
+        <div class="row">
+            <h3 class="display-5 col-lg-2">Basiswort </h3>
+            <input name="input" type="text" class="form-control col-lg-8" id="input1" placeholder="Bitte hier das Basiswort eingeben...">
+        </div>
+        <button type="submit" class="btn btn-success btn-lg btn-block col-lg-12" style="margin-top: 0.5rem">Abschicken</button>
     </form>
     {% if prediction %}
     <p></p>
     <div class="container border border-success">
-        <h3 class="display-5">Unser System hat {{no_hits}} Assoziationen zu {{baseterm}} gefunden. Versuch, diese zu erraten.</h3>
+        <h3 class="display-5">Unser System hat {{no_hits}} Assoziationen zu "{{baseterm}}" gefunden. Versuch, diese zu erraten.</h3>
         {% if wrong_guess %}
             <div class="alert alert-warning" role="alert">
                 <h4 class="alert-heading">Schade</h4>
